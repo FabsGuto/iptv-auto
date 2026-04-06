@@ -1,0 +1,33 @@
+name: Update IPTV List
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # todos los días
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.x
+
+    - name: Install requests
+      run: pip install requests
+
+    - name: Run script
+      run: python generate.py
+
+    - name: Commit changes
+      run: |
+        git config --global user.name "iptv-bot"
+        git config --global user.email "bot@example.com"
+        git add playlist.m3u
+        git commit -m "update list" || echo "no changes"
+        git push
